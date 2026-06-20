@@ -621,6 +621,7 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 		if (!file || file.extension !== "md") return;
 
 		const container = view.contentEl;
+		container.addClass(`${PLUGIN_CLASS}-host`);
 		Array.from(container.children)
 			.filter((el): el is HTMLElement => el.instanceOf(HTMLElement) && el.hasClass(PLUGIN_CLASS))
 			.forEach((el) => el.remove());
@@ -650,7 +651,10 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 	}
 
 	private removeToolbars(): void {
-		window.activeDocument?.querySelectorAll<HTMLElement>(`.${PLUGIN_CLASS}`).forEach((el) => el.remove());
+		window.activeDocument?.querySelectorAll<HTMLElement>(`.${PLUGIN_CLASS}`).forEach((el) => {
+			el.parentElement?.removeClass(`${PLUGIN_CLASS}-host`);
+			el.remove();
+		});
 	}
 
 	private handleToolbarButton(buttonId: ToolbarButtonId, event: MouseEvent): void {
