@@ -646,7 +646,7 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 	}
 
 	private removeToolbars(): void {
-			window.activeDocument.querySelectorAll<HTMLElement>(`.${PLUGIN_CLASS}`).forEach((el) => el.remove());
+		window.activeDocument.querySelectorAll<HTMLElement>(`.${PLUGIN_CLASS}`).forEach((el) => el.remove());
 	}
 
 	private handleToolbarButton(buttonId: ToolbarButtonId, event: MouseEvent): void {
@@ -839,12 +839,11 @@ class RecentNotesModal extends Modal {
 			.filter((file) => matchesQuery(file.path, query));
 
 		const currentFolderFiles = files.filter((file) => (file.parent?.path ?? "") === activeFolderPath);
-		const otherFiles = files.filter((file) => (file.parent?.path ?? "") !== activeFolderPath);
 
 		if (currentFolderFiles.length > 0) {
 			this.renderNoteList(contentEl, "Current Folder Recent Notes", currentFolderFiles);
 		}
-		this.renderNoteList(contentEl, "All Recent Notes", otherFiles);
+		this.renderNoteList(contentEl, "All Recent Notes", files);
 
 		if (files.length === 0) {
 			contentEl.createDiv({ cls: "fjg-note-toolbar-modal__empty", text: "No recent notes yet." });
@@ -1084,7 +1083,7 @@ class FjgNoteToolbarSettingTab extends PluginSettingTab {
 			.addTextArea((text) => {
 				text.inputEl.rows = 8;
 				text
-						.setPlaceholder("AI team | AI team")
+					.setPlaceholder("AI team | AI team")
 					.setValue(formatShortcuts(this.plugin.settings.projectFolderShortcuts))
 					.onChange(async (value) => {
 						this.plugin.settings.projectFolderShortcuts = parseShortcuts(value);
