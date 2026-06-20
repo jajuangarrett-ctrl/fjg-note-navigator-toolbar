@@ -23,7 +23,7 @@ type ToolbarButtonId =
 	| "openFolder"
 	| "projectFolders";
 
-type SortOrder = "alphabetical" | "modified" | "created";
+type SortOrder = "file-name-asc" | "created-desc" | "file-size-desc" | "updated-desc";
 
 type CopyAction =
 	| "vault-note"
@@ -121,7 +121,7 @@ const DEFAULT_SETTINGS: FjgNoteToolbarSettings = {
 	projectFolderShortcuts: DEFAULT_PROJECT_FOLDER_SHORTCUTS,
 	showNotesInPopups: true,
 	showFoldersInPopups: true,
-	sortOrder: "alphabetical",
+	sortOrder: "updated-desc",
 	includeSubfolderContents: false,
 	maxRecentNotes: 40,
 	recentNotes: [],
@@ -195,6 +195,7 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 		const projectFolderShortcuts = shouldMigrateProjectShortcuts
 			? DEFAULT_PROJECT_FOLDER_SHORTCUTS
 			: loadedProjectShortcuts ?? DEFAULT_PROJECT_FOLDER_SHORTCUTS;
+		const sortOrder = normalizeSortOrder(loaded?.sortOrder);
 		this.settings = {
 			...DEFAULT_SETTINGS,
 			...loaded,
@@ -205,6 +206,7 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 			customFolderShortcuts: loaded?.customFolderShortcuts ?? DEFAULT_SETTINGS.customFolderShortcuts,
 			customNoteShortcuts: loaded?.customNoteShortcuts ?? DEFAULT_SETTINGS.customNoteShortcuts,
 			projectFolderShortcuts,
+			sortOrder,
 			maxRecentNotes: loaded?.maxRecentNotes && Number.isFinite(loaded.maxRecentNotes)
 				? Math.max(1, loaded.maxRecentNotes)
 				: DEFAULT_SETTINGS.maxRecentNotes,
@@ -318,10 +320,11 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 
 	showProjectFoldersMenu(event: MouseEvent): void {
 		const menu = new Menu();
-		if (this.settings.projectFolderShortcuts.length === 0) {
+		const shortcuts = this.sortShortcuts(this.settings.projectFolderShortcuts);
+		if (shortcuts.length === 0) {
 			menu.addItem((item) => item.setTitle("No AI / project folders configured").setDisabled(true));
 		}
-		this.settings.projectFolderShortcuts.forEach((shortcut) => {
+		shortcuts.forEach((shortcut) => {
 			menu.addItem((item) =>
 				item
 					.setTitle(`Open ${shortcut.label}`)
@@ -451,11 +454,13 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 	sortFiles(files: TFile[]): TFile[] {
 		return [...files].sort((a, b) => {
 			switch (this.settings.sortOrder) {
-				case "modified":
+				case "updated-desc":
 					return b.stat.mtime - a.stat.mtime || a.basename.localeCompare(b.basename);
-				case "created":
+				case "created-desc":
 					return b.stat.ctime - a.stat.ctime || a.basename.localeCompare(b.basename);
-				case "alphabetical":
+				case "file-size-desc":
+					return b.stat.size - a.stat.size || a.basename.localeCompare(b.basename);
+				case "file-name-asc":
 				default:
 					return a.basename.localeCompare(b.basename);
 			}
@@ -464,6 +469,39 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 
 	sortFolders(folders: TFolder[]): TFolder[] {
 		return [...folders].sort((a, b) => a.name.localeCompare(b.name));
+	}
+
+	sortShortcuts(shortcuts: Shortcut[]): Shortcut[] {
+		return [...shortcuts].sort((a, b) => this.compareShortcut(a, b));
+	}
+
+	private compareShortcut(a: Shortcut, b: Shortcut): number {
+		const aTarget = this.app.vault.getAbstractFileByPath(this.normalizeShortcutPath(a.path));
+		const bTarget = this.app.vault.getAbstractFileByPath(this.normalizeShortcutPath(b.path));
+		const aName = (a.label || a.path).localeCompare(b.label || b.path);
+		switch (this.settings.sortOrder) {
+			case "updated-desc":
+				return this.getStatValue(bTarget, "mtime") - this.getStatValue(aTarget, "mtime") || aName;
+			case "created-desc":
+				return this.getStatValue(bTarget, "ctime") - this.getStatValue(aTarget, "ctime") || aName;
+			case "file-size-desc":
+				return this.getStatValue(bTarget, "size") - this.getStatValue(aTarget, "size") || aName;
+			case "file-name-asc":
+			default:
+				return aName;
+		}
+	}
+
+	private getStatValue(file: TAbstractFile | null, key: "ctime" | "mtime" | "size"): number {
+		if (!(file instanceof TFile)) return 0;
+		switch (key) {
+			case "ctime":
+				return file.stat.ctime;
+			case "mtime":
+				return file.stat.mtime;
+			case "size":
+				return file.stat.size;
+		}
 	}
 
 	collectFolderEntries(folder: TFolder): { notes: TFile[]; folders: TFolder[] } {
@@ -548,7 +586,7 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 		};
 
 		walk(parsed);
-		return shortcuts;
+		return this.sortShortcuts(shortcuts);
 	}
 
 	private addCopyMenuItem(menu: Menu, title: string, kind: CopyAction): void {
@@ -877,10 +915,10 @@ class RecentNotesModal extends Modal {
 
 		const activeFolderPath = this.plugin.getActiveFolder()?.path ?? "";
 		const query = this.query.trim().toLowerCase();
-		const files = this.plugin.settings.recentNotes
+		const files = this.plugin.sortFiles(this.plugin.settings.recentNotes
 			.map((recent) => this.plugin.getFile(recent.path))
 			.filter((file): file is TFile => file instanceof TFile)
-			.filter((file) => matchesQuery(file.path, query));
+			.filter((file) => matchesQuery(file.path, query)));
 
 		const currentFolderFiles = files.filter((file) => (file.parent?.path ?? "") === activeFolderPath);
 
@@ -954,11 +992,11 @@ class BookmarksModal extends Modal {
 		window.setTimeout(() => search.focus(), 0);
 
 		const bookmarkShortcuts = await this.plugin.readBookmarks();
-		const allShortcuts = [
+		const allShortcuts = this.plugin.sortShortcuts([
 			...bookmarkShortcuts,
 			...this.plugin.settings.customFolderShortcuts,
 			...this.plugin.settings.customNoteShortcuts,
-		];
+		]);
 		const query = this.query.trim().toLowerCase();
 		const filtered = allShortcuts.filter((shortcut) => matchesQuery(`${shortcut.label} ${shortcut.path}`, query));
 
@@ -1065,12 +1103,13 @@ class FjgNoteToolbarSettingTab extends PluginSettingTab {
 			);
 		new Setting(containerEl)
 			.setName("Sort order")
-			.setDesc("Controls note ordering inside folder popups.")
+			.setDesc("Controls result ordering for folder, recent, bookmark, and project folder popups.")
 			.addDropdown((dropdown) =>
 				dropdown
-					.addOption("alphabetical", "Alphabetical")
-					.addOption("modified", "Modified date")
-					.addOption("created", "Created date")
+					.addOption("file-name-asc", "File name (a to z)")
+					.addOption("created-desc", "Created (new to old)")
+					.addOption("file-size-desc", "File size (big to small)")
+					.addOption("updated-desc", "Last update (new to old)")
 					.setValue(this.plugin.settings.sortOrder)
 					.onChange(async (value) => {
 						this.plugin.settings.sortOrder = value as SortOrder;
@@ -1142,6 +1181,16 @@ class FjgNoteToolbarSettingTab extends PluginSettingTab {
 
 function matchesQuery(value: string, query: string): boolean {
 	return query === "" || value.toLowerCase().includes(query);
+}
+
+function normalizeSortOrder(value: unknown): SortOrder {
+	if (value === "file-name-asc" || value === "created-desc" || value === "file-size-desc" || value === "updated-desc") {
+		return value;
+	}
+	if (value === "alphabetical") return "file-name-asc";
+	if (value === "created") return "created-desc";
+	if (value === "modified") return "updated-desc";
+	return DEFAULT_SETTINGS.sortOrder;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

@@ -57,7 +57,7 @@ Available settings:
 - Custom note shortcuts, one per line as `Label | path`.
 - AI / project folder shortcuts, one per line as `Label | path`.
 - Whether popups show notes, folders, or both.
-- Sort order: alphabetical, modified date, or created date.
+- Sort order: File Name (A to Z), Created (New to Old), File Size (Big to Small), or Last Update (New to Old).
 - Maximum number of recent notes retained.
 - Whether folder popups include notes from subfolders.
 
