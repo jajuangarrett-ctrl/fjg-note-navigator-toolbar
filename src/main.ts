@@ -79,6 +79,10 @@ interface ElectronModule {
 	shell?: ElectronShell;
 }
 
+interface OsModule {
+	homedir?: () => string;
+}
+
 declare global {
 	interface Window {
 		require?: (module: string) => unknown;
@@ -103,7 +107,7 @@ const DEFAULT_SETTINGS: FjgNoteToolbarSettings = {
 		{ label: "AI Team", path: "AI Team" },
 		{ label: "Prompt Library", path: "Prompt Library" },
 		{ label: "Agent Dashboard", path: "Artifacts/Agent Mission Control" },
-		{ label: "Codex Projects", path: "Codex Projects" },
+		{ label: "Codex Projects", path: "~/Codex" },
 	],
 	showNotesInPopups: true,
 	showFoldersInPopups: true,
@@ -357,11 +361,17 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 
 		const shell = this.getElectronShell();
 		if (!shell) {
-				new Notice("Finder/file explorer access is not available in this Obsidian environment.");
+			new Notice("Finder/file explorer access is not available in this Obsidian environment.");
 			return;
 		}
 
-		const result = await shell.openPath(systemPath);
+		const resolvedPath = this.resolveSystemPath(systemPath);
+		if (!resolvedPath) {
+			new Notice(`Could not resolve ${label}.`);
+			return;
+		}
+
+		const result = await shell.openPath(resolvedPath);
 		if (result) {
 			new Notice(`Could not open ${label}: ${result}`);
 			return;
@@ -415,7 +425,7 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 	}
 
 	isLikelySystemPath(path: string): boolean {
-		return path.startsWith("/") || /^[A-Za-z]:[\\/]/.test(path);
+		return path.startsWith("/") || path.startsWith("~/") || path === "~" || /^[A-Za-z]:[\\/]/.test(path);
 	}
 
 	fileFolderPath(file: TFile): string {
@@ -567,6 +577,22 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 		if (!requireFn) return null;
 		const electron = requireFn("electron") as ElectronModule;
 		return electron.shell ?? null;
+	}
+
+	private resolveSystemPath(systemPath: string): string | null {
+		if (systemPath === "~" || systemPath.startsWith("~/")) {
+			const home = this.getHomeDir();
+			if (!home) return null;
+			return systemPath === "~" ? home : `${home}${systemPath.slice(1)}`;
+		}
+		return systemPath;
+	}
+
+	private getHomeDir(): string | null {
+		const requireFn = window.require;
+		if (!requireFn) return null;
+		const os = requireFn("os") as OsModule;
+		return typeof os.homedir === "function" ? os.homedir() : null;
 	}
 
 	private scheduleToolbarRender(): void {

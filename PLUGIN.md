@@ -6,6 +6,8 @@ Build a mobile-friendly Obsidian toolbar for Franklin's folder-first vault workf
 
 The plugin should make common navigation and path-sharing actions available directly from the current note, especially on iPhone where the file explorer is slower to use.
 
+This project was cloned from `chrisgurney/obsidian-note-toolbar` and then customized. The upstream clone remote is named `upstream`; do not push Franklin-specific work back to that repository.
+
 ## Source And Install Paths
 
 Source:
@@ -62,4 +64,3 @@ That is not the custom plugin install. This custom plugin uses a different id an
 `/Users/franklingarrett/FJG Vault/.obsidian/plugins/fjg-note-navigator-toolbar/`
 
 If the custom plugin seems to disappear in Obsidian, first check that this install folder exists and that `manifest.json` contains `"id": "fjg-note-navigator-toolbar"`.
-

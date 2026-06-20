@@ -11,7 +11,7 @@ This fork started from `chrisgurney/obsidian-note-toolbar`, then was rebuilt aro
 - Recent Notes popup shows recently opened notes, with notes from the current folder first.
 - Bookmarks popup reads saved Obsidian bookmarks and combines them with configured note and folder shortcuts.
 - Open Folder menu opens the current note folder, vault root, configured folder shortcuts, or configured project folders in Finder/File Explorer on desktop.
-- AI / Project Folders menu opens configured project folder shortcuts in Obsidian.
+- AI / Project Folders menu opens configured project folder shortcuts in Obsidian when they are vault folders, or through the desktop system file explorer when they are system paths.
 - Settings control whether the toolbar is enabled, visible toolbar buttons, folder shortcuts, note shortcuts, project folder shortcuts, popup contents, sort order, recent-note limit, and subfolder inclusion.
 
 ## Installation
@@ -44,7 +44,7 @@ Toolbar buttons:
 - `Recent Notes`: shows recently opened notes and places recent notes from the current folder first.
 - `Bookmarks`: shows saved Obsidian bookmarks plus configured note and folder shortcuts.
 - `Open Folder`: opens folders in Finder/File Explorer. This is desktop-only and hidden on mobile.
-- `AI / Project Folders`: opens configured folder shortcuts in Obsidian.
+- `AI / Project Folders`: opens configured folder shortcuts. Vault-relative folders open in Obsidian; system paths open on desktop.
 
 ## Settings
 
@@ -61,7 +61,7 @@ Available settings:
 - Maximum number of recent notes retained.
 - Whether folder popups include notes from subfolders.
 
-Shortcut paths are vault-relative by default. Desktop open actions also accept full system paths for project folders outside the vault.
+Shortcut paths are vault-relative by default. Desktop open actions also accept full system paths for project folders outside the vault, including `~/...` paths.
 
 Default AI / project folder shortcuts are:
 
@@ -69,7 +69,7 @@ Default AI / project folder shortcuts are:
 AI Team | AI Team
 Prompt Library | Prompt Library
 Agent Dashboard | Artifacts/Agent Mission Control
-Codex Projects | Codex Projects
+Codex Projects | ~/Codex
 ```
 
 Edit these defaults in settings to match the vault.

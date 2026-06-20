@@ -2,6 +2,8 @@
 
 Custom Obsidian plugin source for Franklin Garrett's note navigation toolbar.
 
+This project was cloned from `chrisgurney/obsidian-note-toolbar` and then customized. Keep the base repository remote named `upstream`; add a Franklin-owned `origin` only after a GitHub repo is intentionally created for this plugin.
+
 This source folder is the working project. The installed Obsidian plugin output is copied into:
 
 `/Users/franklingarrett/FJG Vault/.obsidian/plugins/fjg-note-navigator-toolbar/`
@@ -27,4 +29,3 @@ Do not rely on Codex Goals as the only project record. When work changes directi
 `/Users/franklingarrett/FJG Vault/Artifacts/Custom Toolbar/PLUGIN.md`
 
 Commit source changes locally before leaving the project.
-
