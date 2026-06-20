@@ -62,6 +62,7 @@ interface FjgNoteToolbarSettings {
 	showNotesInPopups: boolean;
 	showFoldersInPopups: boolean;
 	sortOrder: SortOrder;
+	sortDefaultMigrated: boolean;
 	includeSubfolderContents: boolean;
 	maxRecentNotes: number;
 	recentNotes: RecentNote[];
@@ -122,6 +123,7 @@ const DEFAULT_SETTINGS: FjgNoteToolbarSettings = {
 	showNotesInPopups: true,
 	showFoldersInPopups: true,
 	sortOrder: "updated-desc",
+	sortDefaultMigrated: true,
 	includeSubfolderContents: false,
 	maxRecentNotes: 40,
 	recentNotes: [],
@@ -195,7 +197,8 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 		const projectFolderShortcuts = shouldMigrateProjectShortcuts
 			? DEFAULT_PROJECT_FOLDER_SHORTCUTS
 			: loadedProjectShortcuts ?? DEFAULT_PROJECT_FOLDER_SHORTCUTS;
-		const sortOrder = normalizeSortOrder(loaded?.sortOrder);
+		const shouldMigrateSortOrder = loaded?.sortDefaultMigrated !== true && shouldUseUpdatedSortDefault(loaded?.sortOrder);
+		const sortOrder = shouldMigrateSortOrder ? DEFAULT_SETTINGS.sortOrder : normalizeSortOrder(loaded?.sortOrder);
 		this.settings = {
 			...DEFAULT_SETTINGS,
 			...loaded,
@@ -207,12 +210,13 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 			customNoteShortcuts: loaded?.customNoteShortcuts ?? DEFAULT_SETTINGS.customNoteShortcuts,
 			projectFolderShortcuts,
 			sortOrder,
+			sortDefaultMigrated: true,
 			maxRecentNotes: loaded?.maxRecentNotes && Number.isFinite(loaded.maxRecentNotes)
 				? Math.max(1, loaded.maxRecentNotes)
 				: DEFAULT_SETTINGS.maxRecentNotes,
 			recentNotes: loaded?.recentNotes ?? DEFAULT_SETTINGS.recentNotes,
 		};
-		if (shouldMigrateProjectShortcuts) await this.saveData(this.settings);
+		if (shouldMigrateProjectShortcuts || shouldMigrateSortOrder) await this.saveData(this.settings);
 	}
 
 	async saveSettings(): Promise<void> {
@@ -1191,6 +1195,10 @@ function normalizeSortOrder(value: unknown): SortOrder {
 	if (value === "created") return "created-desc";
 	if (value === "modified") return "updated-desc";
 	return DEFAULT_SETTINGS.sortOrder;
+}
+
+function shouldUseUpdatedSortDefault(value: unknown): boolean {
+	return value === undefined || value === "alphabetical" || value === "modified" || value === "file-name-asc";
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
