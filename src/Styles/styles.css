@@ -154,18 +154,47 @@
 
 @media (max-width: 560px) {
 	.fjg-note-toolbar {
+		flex-wrap: nowrap;
 		gap: 4px;
-		padding: 6px;
+		margin: calc(env(safe-area-inset-top, 0px) + 32px) 0 8px;
+		padding: 3px 2px 5px;
+		border: 0;
+		border-radius: 0;
+		background: transparent;
+		overflow-x: auto;
+		scrollbar-width: none;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.fjg-note-toolbar::-webkit-scrollbar {
+		display: none;
 	}
 
 	.fjg-note-toolbar__button {
-		min-height: 36px;
-		flex: 1 1 calc(50% - 4px);
+		min-height: 28px;
+		flex: 0 0 auto;
 		justify-content: center;
-		padding: 6px 8px;
+		gap: 4px;
+		padding: 3px 7px;
+		border-radius: 5px;
+		background: var(--background-primary-alt);
+		font-size: var(--font-ui-smaller);
+		opacity: 0.9;
+	}
+
+	.fjg-note-toolbar__icon {
+		width: 14px;
+		height: 14px;
+		flex-basis: 14px;
+	}
+
+	.fjg-note-toolbar__icon svg {
+		width: 14px;
+		height: 14px;
 	}
 
 	.fjg-note-toolbar__label {
+		max-width: 90px;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
