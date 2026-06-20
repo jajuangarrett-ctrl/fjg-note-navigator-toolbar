@@ -156,7 +156,7 @@
 	.fjg-note-toolbar {
 		flex-wrap: nowrap;
 		gap: 4px;
-		margin: calc(env(safe-area-inset-top, 0px) + 32px) 0 8px;
+		margin: calc(env(safe-area-inset-top, 0px) + 64px) 0 8px;
 		padding: 3px 2px 5px;
 		border: 0;
 		border-radius: 0;
