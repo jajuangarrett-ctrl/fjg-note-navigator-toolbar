@@ -621,13 +621,13 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 		if (!file || file.extension !== "md") return;
 
 		const container = view.contentEl;
-		container.addClass(`${PLUGIN_CLASS}-host`);
 		Array.from(container.children)
 			.filter((el): el is HTMLElement => el.instanceOf(HTMLElement) && el.hasClass(PLUGIN_CLASS))
 			.forEach((el) => el.remove());
 
 		const toolbar = container.createDiv({ cls: PLUGIN_CLASS });
 		toolbar.setAttr("data-plugin", "fjg-note-navigator-toolbar");
+		this.moveToolbarIntoNoteFlow(container, toolbar);
 
 		BUTTONS.forEach((button) => {
 			if (!this.settings.buttons[button.id]) return;
@@ -650,9 +650,20 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 		container.prepend(toolbar);
 	}
 
+	private moveToolbarIntoNoteFlow(container: HTMLElement, toolbar: HTMLElement): void {
+		const anchors = Array.from(
+			container.querySelectorAll<HTMLElement>(".metadata-container, .metadata-properties, .inline-title"),
+		).filter((el) => el.offsetParent !== null);
+		const anchor = anchors.length > 0 ? anchors[anchors.length - 1] : undefined;
+		if (!anchor) {
+			container.prepend(toolbar);
+			return;
+		}
+		anchor.insertAdjacentElement("afterend", toolbar);
+	}
+
 	private removeToolbars(): void {
 		window.activeDocument?.querySelectorAll<HTMLElement>(`.${PLUGIN_CLASS}`).forEach((el) => {
-			el.parentElement?.removeClass(`${PLUGIN_CLASS}-host`);
 			el.remove();
 		});
 	}

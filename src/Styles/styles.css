@@ -157,20 +157,11 @@
 }
 
 @media (max-width: 560px) {
-	.fjg-note-toolbar-host {
-		padding-top: 38px;
-	}
-
 	.fjg-note-toolbar {
-		position: fixed;
-		z-index: 20;
-		top: calc(env(safe-area-inset-top, 0px) + 108px);
-		right: 0;
-		left: 0;
 		box-sizing: border-box;
 		flex-wrap: nowrap;
 		gap: 4px;
-		margin: 0;
+		margin: 6px 0 12px;
 		padding: 3px max(4px, env(safe-area-inset-right, 0px)) 5px max(4px, env(safe-area-inset-left, 0px));
 		border: 0;
 		border-radius: 0;
