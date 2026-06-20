@@ -1,21 +1,172 @@
-/* NOTE: make any modifications to this file in src/Styles/styles.css */
+.fjg-note-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	align-items: center;
+	margin: 0 0 12px;
+	padding: 8px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 8px;
+	background: var(--background-secondary);
+}
 
-/* @settings
-@include "./style-settings.yaml";
-*/
+.fjg-note-toolbar__button {
+	display: inline-flex;
+	min-height: 34px;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 10px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 6px;
+	background: var(--background-primary);
+	color: var(--text-normal);
+	font-size: var(--font-ui-small);
+	line-height: 1.2;
+}
 
-@import "./body.css";
+.fjg-note-toolbar__button:hover,
+.fjg-note-toolbar__button:focus-visible {
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+}
 
-@import "./callout.css";
-@import "./callout-colors.css";
-@import "./fab.css";
-@import "./container.css";
-@import "./menu.css";
-@import './settings.css';
-@import './suggesters.css';
-@import './help.css';
-@import './api.css';
-@import './launchpad.css';
+.fjg-note-toolbar__icon {
+	display: inline-flex;
+	width: 16px;
+	height: 16px;
+	flex: 0 0 16px;
+	align-items: center;
+	justify-content: center;
+}
 
-/* theme overrides: needs to be imported last */
-@import "./overrides-themes.css";
+.fjg-note-toolbar__label {
+	white-space: nowrap;
+}
+
+.fjg-note-toolbar-modal {
+	display: flex;
+	max-height: min(76vh, 720px);
+	flex-direction: column;
+	gap: 12px;
+}
+
+.fjg-note-toolbar-modal h2,
+.fjg-note-toolbar-modal h3,
+.fjg-note-toolbar-modal p {
+	margin: 0;
+}
+
+.fjg-note-toolbar-modal__header {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.fjg-note-toolbar-modal__header p,
+.fjg-note-toolbar-modal__row-path {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}
+
+.fjg-note-toolbar-modal__controls {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: center;
+}
+
+.fjg-note-toolbar-modal__search {
+	width: 100%;
+	min-height: 36px;
+	flex: 1 1 220px;
+}
+
+.fjg-note-toolbar-modal__utility {
+	min-height: 36px;
+	padding: 6px 10px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 6px;
+	background: var(--background-primary);
+	color: var(--text-normal);
+}
+
+.fjg-note-toolbar-modal__section {
+	display: flex;
+	min-height: 0;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.fjg-note-toolbar-modal__list {
+	display: flex;
+	min-height: 0;
+	flex-direction: column;
+	gap: 6px;
+	overflow: auto;
+}
+
+.fjg-note-toolbar-modal__row {
+	display: grid;
+	grid-template-columns: 22px minmax(0, 1fr);
+	gap: 2px 8px;
+	width: 100%;
+	padding: 8px 10px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 6px;
+	background: var(--background-primary);
+	color: var(--text-normal);
+	text-align: left;
+}
+
+.fjg-note-toolbar-modal__row:hover,
+.fjg-note-toolbar-modal__row:focus-visible {
+	background: var(--background-modifier-hover);
+}
+
+.fjg-note-toolbar-modal__row-icon {
+	grid-row: 1 / span 2;
+	display: inline-flex;
+	width: 18px;
+	height: 18px;
+	align-items: center;
+	justify-content: center;
+	color: var(--text-muted);
+}
+
+.fjg-note-toolbar-modal__row-title,
+.fjg-note-toolbar-modal__row-path {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.fjg-note-toolbar-modal__empty {
+	padding: 8px 0;
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+}
+
+.fjg-note-toolbar-settings textarea {
+	width: 100%;
+	min-height: 120px;
+	font-family: var(--font-monospace);
+}
+
+@media (max-width: 560px) {
+	.fjg-note-toolbar {
+		gap: 4px;
+		padding: 6px;
+	}
+
+	.fjg-note-toolbar__button {
+		min-height: 36px;
+		flex: 1 1 calc(50% - 4px);
+		justify-content: center;
+		padding: 6px 8px;
+	}
+
+	.fjg-note-toolbar__label {
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+}

@@ -1,19 +1,18 @@
 {
-  "name": "obsidian-note-toolbar",
-  "version": "1.33.28",
-  "description": "Obsidian plugin that adds customizable toolbars to your notes.",
+  "name": "fjg-note-navigator-toolbar",
+  "version": "0.1.0",
+  "description": "Custom Obsidian note toolbar for folder navigation, copy-location actions, recent notes, bookmarks, and project shortcuts.",
   "main": "main.js",
   "scripts": {
     "build": "tsc --noEmit --skipLibCheck && node esbuild.config.mjs production",
-    "dev": "npm run prebuild && node esbuild.config.mjs",
-    "lint": "npx eslint .",
-    "prebuild": "node -p \"'export const PLUGIN_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
+    "dev": "node esbuild.config.mjs",
+    "lint": "npx eslint src/main.ts",
     "release": "node release.mjs",
-    "stylelint": "npx stylelint '**/*.css'",
+    "stylelint": "npx stylelint 'src/Styles/styles.css'",
     "typecheck": "tsc --noEmit --skipLibCheck"
   },
   "keywords": [],
-  "author": "Chris Gurney",
+  "author": "Franklin Garrett",
   "license": "GPL-3.0",
   "devDependencies": {
     "@types/node": "^25.0.3",
