@@ -91,6 +91,21 @@ declare global {
 
 const PLUGIN_CLASS = "fjg-note-toolbar";
 
+const OLD_DEFAULT_PROJECT_FOLDER_SHORTCUTS: Shortcut[] = [
+	{ label: "AI Team", path: "AI Team" },
+	{ label: "Prompt Library", path: "Prompt Library" },
+	{ label: "Agent Dashboard", path: "Artifacts/Agent Mission Control" },
+	{ label: "Codex Projects", path: "~/Codex" },
+];
+
+const DEFAULT_PROJECT_FOLDER_SHORTCUTS: Shortcut[] = [
+	{ label: "AI Team", path: "AI Team" },
+	{ label: "Formatted_Notes", path: "AI Team/Formatted_Notes" },
+	{ label: "Mira Emails", path: "AI Team/Mira Emails" },
+	{ label: "owner_inbox", path: "AI Team/owner_inbox" },
+	{ label: "Team_Inbox", path: "AI Team/Team_Inbox" },
+];
+
 const DEFAULT_SETTINGS: FjgNoteToolbarSettings = {
 	enabled: true,
 	buttons: {
@@ -103,12 +118,7 @@ const DEFAULT_SETTINGS: FjgNoteToolbarSettings = {
 	},
 	customFolderShortcuts: [],
 	customNoteShortcuts: [],
-	projectFolderShortcuts: [
-		{ label: "AI Team", path: "AI Team" },
-		{ label: "Prompt Library", path: "Prompt Library" },
-		{ label: "Agent Dashboard", path: "Artifacts/Agent Mission Control" },
-		{ label: "Codex Projects", path: "~/Codex" },
-	],
+	projectFolderShortcuts: DEFAULT_PROJECT_FOLDER_SHORTCUTS,
 	showNotesInPopups: true,
 	showFoldersInPopups: true,
 	sortOrder: "alphabetical",
@@ -180,6 +190,11 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 
 	async loadSettings(): Promise<void> {
 		const loaded = (await this.loadData()) as Partial<FjgNoteToolbarSettings> | null;
+		const loadedProjectShortcuts = loaded?.projectFolderShortcuts;
+		const shouldMigrateProjectShortcuts = shortcutsMatch(loadedProjectShortcuts, OLD_DEFAULT_PROJECT_FOLDER_SHORTCUTS);
+		const projectFolderShortcuts = shouldMigrateProjectShortcuts
+			? DEFAULT_PROJECT_FOLDER_SHORTCUTS
+			: loadedProjectShortcuts ?? DEFAULT_PROJECT_FOLDER_SHORTCUTS;
 		this.settings = {
 			...DEFAULT_SETTINGS,
 			...loaded,
@@ -189,12 +204,13 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 			},
 			customFolderShortcuts: loaded?.customFolderShortcuts ?? DEFAULT_SETTINGS.customFolderShortcuts,
 			customNoteShortcuts: loaded?.customNoteShortcuts ?? DEFAULT_SETTINGS.customNoteShortcuts,
-			projectFolderShortcuts: loaded?.projectFolderShortcuts ?? DEFAULT_SETTINGS.projectFolderShortcuts,
+			projectFolderShortcuts,
 			maxRecentNotes: loaded?.maxRecentNotes && Number.isFinite(loaded.maxRecentNotes)
 				? Math.max(1, loaded.maxRecentNotes)
 				: DEFAULT_SETTINGS.maxRecentNotes,
 			recentNotes: loaded?.recentNotes ?? DEFAULT_SETTINGS.recentNotes,
 		};
+		if (shouldMigrateProjectShortcuts) await this.saveData(this.settings);
 	}
 
 	async saveSettings(): Promise<void> {
@@ -203,9 +219,9 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 	}
 
 	openFolderNavigator(folderPath?: string): void {
-		const folder = folderPath ? this.getFolder(folderPath) : this.getActiveFolder();
+		const folder = folderPath !== undefined ? this.getFolder(folderPath) : this.app.vault.getRoot();
 		if (!folder) {
-			new Notice("Open a note first, or choose a valid folder shortcut.");
+			new Notice("Choose a valid folder shortcut.");
 			return;
 		}
 		new FolderNavigatorModal(this.app, this, folder).open();
@@ -483,7 +499,7 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 	}
 
 	displayPath(file: TAbstractFile): string {
-		return file.path === "/" || file.path === "" ? "Vault root" : file.path;
+		return file.path === "/" || file.path === "" ? this.app.vault.getName() : file.path;
 	}
 
 	getFullPath(vaultPath: string): string | null {
@@ -1153,6 +1169,12 @@ function parseShortcuts(value: string): Shortcut[] {
 			return path ? { label, path } : { label, path: label };
 		})
 		.filter((shortcut) => shortcut.label.length > 0 && shortcut.path.length > 0);
+}
+
+function shortcutsMatch(actual: Shortcut[] | undefined, expected: Shortcut[]): boolean {
+	if (!actual || actual.length !== expected.length) return false;
+	return actual.every((shortcut, index) =>
+		shortcut.label === expected[index]?.label && shortcut.path === expected[index]?.path);
 }
 
 function formatShortcuts(shortcuts: Shortcut[]): string {

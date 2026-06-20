@@ -6,7 +6,7 @@ This fork started from `chrisgurney/obsidian-note-toolbar`, then was rebuilt aro
 
 ## Features
 
-- Folder Navigator button opens a searchable popup for the current note's folder, including same-folder notes, subfolders, parent navigation, and linked notes from the active note.
+- Folder Navigator button opens a searchable popup for the vault root by default, including notes, subfolders, parent navigation when browsing deeper folders, and linked notes from the active note.
 - Copy Location menu copies vault-relative paths, full system paths, Obsidian URI links, wiki links, and Markdown file links.
 - Recent Notes popup shows recently opened notes, with notes from the current folder first.
 - Bookmarks popup reads saved Obsidian bookmarks and combines them with configured note and folder shortcuts.
@@ -39,7 +39,7 @@ Open any Markdown note. The toolbar appears at the top of the note view.
 
 Toolbar buttons:
 
-- `Folder Navigator`: shows the active note's folder path, notes in the folder, subfolders, parent folder, and a search box. Click a note to open it. Click a folder to browse that folder.
+- `Folder Navigator`: opens the vault root by default, then shows notes, subfolders, parent folder navigation when browsing deeper folders, and a search box. Click a note to open it. Click a folder to browse that folder.
 - `Copy Location`: copies the active note or folder location in several formats.
 - `Recent Notes`: shows recently opened notes and places recent notes from the current folder first.
 - `Bookmarks`: shows saved Obsidian bookmarks plus configured note and folder shortcuts.
@@ -67,9 +67,10 @@ Default AI / project folder shortcuts are:
 
 ```text
 AI Team | AI Team
-Prompt Library | Prompt Library
-Agent Dashboard | Artifacts/Agent Mission Control
-Codex Projects | ~/Codex
+Formatted_Notes | AI Team/Formatted_Notes
+Mira Emails | AI Team/Mira Emails
+owner_inbox | AI Team/owner_inbox
+Team_Inbox | AI Team/Team_Inbox
 ```
 
 Edit these defaults in settings to match the vault.

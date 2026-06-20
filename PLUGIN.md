@@ -28,7 +28,7 @@ Plugin id: `fjg-note-navigator-toolbar`
 
 Plugin name: `FJG Note Navigator Toolbar`
 
-Version: `0.1.9`
+Version: `0.1.10`
 
 Build command:
 
@@ -45,7 +45,7 @@ cp manifest.json main.js styles.css "/Users/franklingarrett/FJG Vault/.obsidian/
 
 ## Feature Scope
 
-- Current Folder Navigator: browse same-folder notes, subfolders, parent folder, and linked notes from the active note.
+- Folder Navigator: browse the vault root by default, plus subfolders, parent folder, and linked notes from the active note.
 - Copy Location: copy vault path, folder path, full system path, Obsidian URI, wiki link, or Markdown link.
 - Recent Notes: show recent Markdown files with current-folder items prioritized.
 - Bookmarks: show saved Obsidian bookmarks plus configured shortcuts.
