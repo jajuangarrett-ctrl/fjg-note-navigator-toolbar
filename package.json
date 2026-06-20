@@ -1,6 +1,6 @@
 {
   "name": "fjg-note-navigator-toolbar",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Custom Obsidian note toolbar for folder navigation, copy-location actions, recent notes, bookmarks, and project shortcuts.",
   "main": "main.js",
   "scripts": {

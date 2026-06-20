@@ -620,7 +620,8 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 		const file = view.file;
 		if (!file || file.extension !== "md") return;
 
-		const container = view.contentEl;
+		const container = this.getNoteFlowContainer(view);
+		view.contentEl.querySelectorAll<HTMLElement>(`.${PLUGIN_CLASS}`).forEach((el) => el.remove());
 		Array.from(container.children)
 			.filter((el): el is HTMLElement => el.instanceOf(HTMLElement) && el.hasClass(PLUGIN_CLASS))
 			.forEach((el) => el.remove());
@@ -646,8 +647,12 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 			buttonEl.createSpan({ cls: `${PLUGIN_CLASS}__label`, text: button.label });
 			buttonEl.addEventListener("click", (event) => this.handleToolbarButton(button.id, event));
 		});
+	}
 
-		container.prepend(toolbar);
+	private getNoteFlowContainer(view: MarkdownView): HTMLElement {
+		return view.contentEl.querySelector<HTMLElement>(".markdown-preview-view")
+			?? view.contentEl.querySelector<HTMLElement>(".cm-contentContainer")
+			?? view.contentEl;
 	}
 
 	private moveToolbarIntoNoteFlow(container: HTMLElement, toolbar: HTMLElement): void {
