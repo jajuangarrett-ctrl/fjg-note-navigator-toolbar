@@ -246,6 +246,19 @@
 		gap: 6px;
 	}
 
+	.fjg-note-toolbar-modal__section--folders,
+	.fjg-note-toolbar-modal__section--current-recent {
+		flex: 0 0 auto;
+		min-height: 188px;
+	}
+
+	.fjg-note-toolbar-modal__section--folders > .fjg-note-toolbar-modal__list,
+	.fjg-note-toolbar-modal__section--current-recent > .fjg-note-toolbar-modal__list {
+		flex: 0 0 auto;
+		min-height: 156px;
+		max-height: 31vh;
+	}
+
 	.fjg-note-toolbar-modal__list {
 		gap: 5px;
 	}

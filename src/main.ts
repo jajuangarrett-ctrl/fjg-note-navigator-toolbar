@@ -759,7 +759,9 @@ class FolderNavigatorModal extends Modal {
 	}
 
 	private renderFolderSection(contentEl: HTMLElement, folders: TFolder[]): void {
-		const section = contentEl.createDiv({ cls: "fjg-note-toolbar-modal__section" });
+		const section = contentEl.createDiv({
+			cls: "fjg-note-toolbar-modal__section fjg-note-toolbar-modal__section--folders",
+		});
 		section.createEl("h3", { text: "Subfolders" });
 		if (folders.length === 0) {
 			section.createDiv({ cls: "fjg-note-toolbar-modal__empty", text: "No subfolders." });
@@ -785,7 +787,9 @@ class FolderNavigatorModal extends Modal {
 
 	private renderNoteSection(contentEl: HTMLElement, title: string, notes: TFile[]): void {
 		if (notes.length === 0) return;
-		const section = contentEl.createDiv({ cls: "fjg-note-toolbar-modal__section" });
+		const section = contentEl.createDiv({
+			cls: "fjg-note-toolbar-modal__section fjg-note-toolbar-modal__section--notes",
+		});
 		section.createEl("h3", { text: title });
 		const list = section.createDiv({ cls: "fjg-note-toolbar-modal__list" });
 		notes.forEach((file) => {
@@ -860,7 +864,10 @@ class RecentNotesModal extends Modal {
 
 	private renderNoteList(contentEl: HTMLElement, title: string, files: TFile[]): void {
 		if (files.length === 0) return;
-		const section = contentEl.createDiv({ cls: "fjg-note-toolbar-modal__section" });
+		const sectionClass = title === "Current Folder Recent Notes"
+			? "fjg-note-toolbar-modal__section fjg-note-toolbar-modal__section--current-recent"
+			: "fjg-note-toolbar-modal__section fjg-note-toolbar-modal__section--all-recent";
+		const section = contentEl.createDiv({ cls: sectionClass });
 		section.createEl("h3", { text: title });
 		const list = section.createDiv({ cls: "fjg-note-toolbar-modal__list" });
 		files.forEach((file) => {

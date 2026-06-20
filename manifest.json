@@ -1,7 +1,7 @@
 {
 	"id": "fjg-note-navigator-toolbar",
 	"name": "FJG Note Navigator Toolbar",
-	"version": "0.1.6",
+	"version": "0.1.7",
 	"minAppVersion": "1.11.0",
 	"description": "Adds a mobile-friendly note toolbar for folder navigation, copy-location actions, recent notes, bookmarks, and project shortcuts.",
 	"author": "Franklin Garrett",
