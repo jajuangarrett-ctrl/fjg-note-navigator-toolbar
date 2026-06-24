@@ -28,7 +28,7 @@ Plugin id: `fjg-note-navigator-toolbar`
 
 Plugin name: `FJG Note Navigator Toolbar`
 
-Version: `0.1.16`
+Version: `0.1.17`
 
 Build command:
 

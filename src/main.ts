@@ -488,6 +488,15 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 		});
 	}
 
+	sortFilesByRecentView(files: TFile[]): TFile[] {
+		const openedAtByPath = new Map(this.settings.recentNotes.map((recent) => [recent.path, recent.openedAt]));
+		return [...files].sort((a, b) => {
+			const aOpenedAt = openedAtByPath.get(a.path) ?? 0;
+			const bOpenedAt = openedAtByPath.get(b.path) ?? 0;
+			return bOpenedAt - aOpenedAt || b.stat.mtime - a.stat.mtime || a.basename.localeCompare(b.basename);
+		});
+	}
+
 	sortFolders(folders: TFolder[]): TFolder[] {
 		return [...folders].sort((a, b) => a.name.localeCompare(b.name));
 	}
@@ -547,7 +556,7 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 
 		visit(folder, true);
 		return {
-			notes: this.sortFiles(notes),
+			notes: this.sortFilesByRecentView(notes),
 			folders: this.sortFolders(folders),
 		};
 	}
@@ -563,7 +572,7 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 		};
 
 		visit(folder);
-		return [...notes].sort((a, b) => b.stat.mtime - a.stat.mtime || a.basename.localeCompare(b.basename));
+		return this.sortFilesByRecentView(notes);
 	}
 
 	collectLinkedNotes(file: TFile | null): TFile[] {
@@ -572,7 +581,7 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 		const linkedFiles = Object.keys(resolvedLinks)
 			.map((path) => this.app.vault.getAbstractFileByPath(path))
 			.filter((linkedFile): linkedFile is TFile => linkedFile instanceof TFile && linkedFile.extension === "md");
-		return this.sortFiles(dedupeFiles(linkedFiles));
+		return this.sortFilesByRecentView(dedupeFiles(linkedFiles));
 	}
 
 	displayPath(file: TAbstractFile): string {
@@ -1075,7 +1084,7 @@ class RecentNotesModal extends Modal {
 
 		const activeFolderPath = this.plugin.getActiveFolder()?.path ?? "";
 		const query = this.query.trim().toLowerCase();
-		const files = this.plugin.sortFiles(this.plugin.settings.recentNotes
+		const files = this.plugin.sortFilesByRecentView(this.plugin.settings.recentNotes
 			.map((recent) => this.plugin.getFile(recent.path))
 			.filter((file): file is TFile => file instanceof TFile)
 			.filter((file) => matchesQuery(file.path, query)));
