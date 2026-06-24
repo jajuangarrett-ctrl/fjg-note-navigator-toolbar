@@ -995,8 +995,11 @@ class FolderNavigatorModal extends Modal {
 	}
 
 	private renderFolderSection(contentEl: HTMLElement, folders: TFolder[]): void {
+		const sectionClass = folders.length > 0
+			? "fjg-note-toolbar-modal__section fjg-note-toolbar-modal__section--folders fjg-note-toolbar-modal__section--folders-populated"
+			: "fjg-note-toolbar-modal__section fjg-note-toolbar-modal__section--folders";
 		const section = contentEl.createDiv({
-			cls: "fjg-note-toolbar-modal__section fjg-note-toolbar-modal__section--folders",
+			cls: sectionClass,
 		});
 		section.createEl("h3", { text: "Subfolders" });
 		if (folders.length === 0) {

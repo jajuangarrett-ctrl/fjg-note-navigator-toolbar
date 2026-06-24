@@ -265,6 +265,17 @@
 	max-height: 42vh;
 }
 
+.fjg-note-toolbar-modal__section--folders-populated {
+	flex: 0 0 auto;
+	min-height: 360px;
+}
+
+.fjg-note-toolbar-modal__section--folders-populated > .fjg-note-toolbar-modal__list {
+	flex: 1 1 auto;
+	min-height: 318px;
+	max-height: 58vh;
+}
+
 .fjg-note-toolbar-settings textarea {
 	width: 100%;
 	min-height: 120px;
@@ -361,13 +372,22 @@
 		max-height: 65vh;
 	}
 
-	.fjg-note-toolbar-modal__section--folders,
+	.fjg-note-toolbar-modal__section--folders-populated {
+		flex: 0 0 auto;
+		min-height: 420px;
+	}
+
+	.fjg-note-toolbar-modal__section--folders-populated > .fjg-note-toolbar-modal__list {
+		flex: 1 1 auto;
+		min-height: 372px;
+		max-height: 62vh;
+	}
+
 	.fjg-note-toolbar-modal__section--current-recent {
 		flex: 0 0 auto;
 		min-height: 348px;
 	}
 
-	.fjg-note-toolbar-modal__section--folders > .fjg-note-toolbar-modal__list,
 	.fjg-note-toolbar-modal__section--current-recent > .fjg-note-toolbar-modal__list {
 		flex: 1 1 auto;
 		min-height: 306px;
