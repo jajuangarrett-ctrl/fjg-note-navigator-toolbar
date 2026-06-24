@@ -92,6 +92,23 @@ declare global {
 
 const PLUGIN_CLASS = "fjg-note-toolbar";
 
+const ROOT_NAVIGATOR_FOLDERS = [
+	"00 Inbox",
+	"00 One Drive",
+	"01 Daily Notes",
+	"02 Programs",
+	"03 Areas",
+	"04 Resources",
+	"05 People",
+	"06 Project Files",
+	"08 Tasks",
+	"09 Thoughts",
+	"AI Team",
+	"Artifacts",
+];
+
+const NAVIGATOR_IGNORED_FOLDER_NAMES = new Set([".git", ".trash", "node_modules"]);
+
 const OLD_DEFAULT_PROJECT_FOLDER_SHORTCUTS: Shortcut[] = [
 	{ label: "AI Team", path: "AI Team" },
 	{ label: "Prompt Library", path: "Prompt Library" },
@@ -479,6 +496,10 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 		return [...shortcuts].sort((a, b) => this.compareShortcut(a, b));
 	}
 
+	isIgnoredNavigatorFolder(folder: TFolder): boolean {
+		return folder.path === this.app.vault.configDir || NAVIGATOR_IGNORED_FOLDER_NAMES.has(folder.name);
+	}
+
 	private compareShortcut(a: Shortcut, b: Shortcut): number {
 		const aTarget = this.app.vault.getAbstractFileByPath(this.normalizeShortcutPath(a.path));
 		const bTarget = this.app.vault.getAbstractFileByPath(this.normalizeShortcutPath(b.path));
@@ -529,6 +550,20 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 			notes: this.sortFiles(notes),
 			folders: this.sortFolders(folders),
 		};
+	}
+
+	collectRecentFolderNotes(folder: TFolder): TFile[] {
+		const notes: TFile[] = [];
+
+		const visit = (current: TFolder): void => {
+			current.children.forEach((child) => {
+				if (child instanceof TFile && child.extension === "md") notes.push(child);
+				if (child instanceof TFolder && !this.isIgnoredNavigatorFolder(child)) visit(child);
+			});
+		};
+
+		visit(folder);
+		return [...notes].sort((a, b) => b.stat.mtime - a.stat.mtime || a.basename.localeCompare(b.basename));
 	}
 
 	collectLinkedNotes(file: TFile | null): TFile[] {
@@ -757,6 +792,7 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 
 class FolderNavigatorModal extends Modal {
 	private query = "";
+	private readonly expandedRootFolderPaths = new Set<string>();
 
 	constructor(
 		app: App,
@@ -818,18 +854,135 @@ class FolderNavigatorModal extends Modal {
 			.collectLinkedNotes(this.sourceFile)
 			.filter((file) => !notePaths.has(file.path))
 			.filter((file) => matchesQuery(file.path, query));
+		const isRootNavigator = this.isRootFolder();
+		const renderedRootSections = isRootNavigator && this.renderRootFolderSections(contentEl, query);
 
-		if (this.plugin.settings.showFoldersInPopups) this.renderFolderSection(contentEl, folders);
+		if (!renderedRootSections && this.plugin.settings.showFoldersInPopups) this.renderFolderSection(contentEl, folders);
 		if (this.plugin.settings.showNotesInPopups) {
-			this.renderNoteSection(contentEl, "Notes", notes);
+			if (!renderedRootSections) this.renderNoteSection(contentEl, "Notes", notes);
 			this.renderNoteSection(contentEl, "Linked notes", linkedNotes);
 		}
 		if (
-			(!this.plugin.settings.showFoldersInPopups || folders.length === 0) &&
-			(!this.plugin.settings.showNotesInPopups || (notes.length === 0 && linkedNotes.length === 0))
+			(!renderedRootSections && (!this.plugin.settings.showFoldersInPopups || folders.length === 0)) &&
+			(!this.plugin.settings.showNotesInPopups || ((!renderedRootSections && notes.length === 0) && linkedNotes.length === 0))
 		) {
 			contentEl.createDiv({ cls: "fjg-note-toolbar-modal__empty", text: "No matching notes or folders." });
 		}
+	}
+
+	private isRootFolder(): boolean {
+		return this.folder.path === "/" || this.folder.path === "";
+	}
+
+	private renderRootFolderSections(contentEl: HTMLElement, query: string): boolean {
+		const rootFolders = ROOT_NAVIGATOR_FOLDERS
+			.map((path) => this.plugin.getFolder(path))
+			.filter((folder): folder is TFolder => folder instanceof TFolder);
+
+		if (rootFolders.length === 0) return false;
+
+		const section = contentEl.createDiv({
+			cls: "fjg-note-toolbar-modal__section fjg-note-toolbar-modal__section--root-folders",
+		});
+		section.createEl("h3", { text: "Folders" });
+		const list = section.createDiv({ cls: "fjg-note-toolbar-modal__folder-groups" });
+		let renderedCount = 0;
+
+		rootFolders.forEach((folder) => {
+			const immediateFolders = this.plugin.sortFolders(
+				folder.children.filter(
+					(child): child is TFolder => child instanceof TFolder && !this.plugin.isIgnoredNavigatorFolder(child),
+				),
+			);
+			const notes = this.plugin
+				.collectRecentFolderNotes(folder)
+				.filter((file) => matchesQuery(`${file.basename} ${file.path}`, query));
+			const childFolders = immediateFolders.filter((child) => matchesQuery(child.path, query));
+			const folderMatchesQuery = matchesQuery(folder.path, query);
+			if (query && !folderMatchesQuery && notes.length === 0 && childFolders.length === 0) return;
+
+			renderedCount += 1;
+			const isExpanded = query.length > 0 || this.expandedRootFolderPaths.has(folder.path);
+			const group = list.createDiv({
+				cls: `fjg-note-toolbar-modal__folder-group ${isExpanded ? "is-expanded" : ""}`,
+			});
+			const toggle = group.createEl("button", {
+				cls: "fjg-note-toolbar-modal__folder-toggle",
+				attr: {
+					type: "button",
+					"aria-expanded": String(isExpanded),
+				},
+			});
+			setIcon(toggle.createSpan({ cls: "fjg-note-toolbar-modal__folder-toggle-icon" }), isExpanded ? "chevron-down" : "chevron-right");
+			const label = toggle.createSpan({ cls: "fjg-note-toolbar-modal__folder-toggle-label" });
+			label.createSpan({ cls: "fjg-note-toolbar-modal__folder-toggle-title", text: folder.name });
+			label.createSpan({
+				cls: "fjg-note-toolbar-modal__folder-toggle-meta",
+				text: `${notes.length} notes${childFolders.length > 0 ? `, ${childFolders.length} folders` : ""}`,
+			});
+			toggle.addEventListener("click", () => {
+				if (this.expandedRootFolderPaths.has(folder.path)) {
+					this.expandedRootFolderPaths.delete(folder.path);
+				} else {
+					this.expandedRootFolderPaths.add(folder.path);
+				}
+				this.render();
+			});
+
+			if (!isExpanded) return;
+			const contents = group.createDiv({ cls: "fjg-note-toolbar-modal__folder-group-content" });
+			if (this.plugin.settings.showFoldersInPopups) this.renderInlineFolderRows(contents, childFolders);
+			if (this.plugin.settings.showNotesInPopups) this.renderInlineNoteRows(contents, notes);
+			if (
+				(!this.plugin.settings.showFoldersInPopups || childFolders.length === 0) &&
+				(!this.plugin.settings.showNotesInPopups || notes.length === 0)
+			) {
+				contents.createDiv({ cls: "fjg-note-toolbar-modal__empty", text: "No matching notes or folders." });
+			}
+		});
+
+		if (renderedCount === 0) {
+			section.createDiv({ cls: "fjg-note-toolbar-modal__empty", text: "No matching folders." });
+		}
+		return true;
+	}
+
+	private renderInlineFolderRows(container: HTMLElement, folders: TFolder[]): void {
+		folders.forEach((folder) => {
+			const button = container.createEl("button", {
+				cls: "fjg-note-toolbar-modal__row",
+				attr: { type: "button" },
+			});
+			const icon = button.createSpan({ cls: "fjg-note-toolbar-modal__row-icon" });
+			setIcon(icon, "folder");
+			const text = button.createSpan({ cls: "fjg-note-toolbar-modal__row-text" });
+			text.createSpan({ cls: "fjg-note-toolbar-modal__row-title", text: folder.name || "Vault root" });
+			text.createSpan({ cls: "fjg-note-toolbar-modal__row-path", text: this.plugin.displayPath(folder) });
+			button.addEventListener("click", () => {
+				this.folder = folder;
+				this.query = "";
+				this.expandedRootFolderPaths.clear();
+				this.render();
+			});
+		});
+	}
+
+	private renderInlineNoteRows(container: HTMLElement, notes: TFile[]): void {
+		notes.forEach((file) => {
+			const button = container.createEl("button", {
+				cls: "fjg-note-toolbar-modal__row",
+				attr: { type: "button" },
+			});
+			const icon = button.createSpan({ cls: "fjg-note-toolbar-modal__row-icon" });
+			setIcon(icon, "file-text");
+			const text = button.createSpan({ cls: "fjg-note-toolbar-modal__row-text" });
+			text.createSpan({ cls: "fjg-note-toolbar-modal__row-title", text: file.basename });
+			text.createSpan({ cls: "fjg-note-toolbar-modal__row-path", text: file.path });
+			button.addEventListener("click", () => {
+				void this.plugin.openFile(file);
+				this.close();
+			});
+		});
 	}
 
 	private renderFolderSection(contentEl: HTMLElement, folders: TFolder[]): void {

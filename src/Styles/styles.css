@@ -110,6 +110,77 @@
 	overflow: auto;
 }
 
+.fjg-note-toolbar-modal__folder-groups {
+	display: flex;
+	min-height: 0;
+	flex-direction: column;
+	gap: 6px;
+	overflow: auto;
+}
+
+.fjg-note-toolbar-modal__folder-group {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.fjg-note-toolbar-modal__folder-toggle {
+	display: grid;
+	grid-template-columns: 22px minmax(0, 1fr);
+	gap: 10px;
+	width: 100%;
+	min-height: 52px;
+	align-items: center;
+	padding: 8px 10px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 6px;
+	background: var(--background-primary);
+	color: var(--text-normal);
+	text-align: left;
+}
+
+.fjg-note-toolbar-modal__folder-toggle:hover,
+.fjg-note-toolbar-modal__folder-toggle:focus-visible {
+	background: var(--background-modifier-hover);
+}
+
+.fjg-note-toolbar-modal__folder-toggle-icon {
+	display: inline-flex;
+	width: 18px;
+	height: 18px;
+	align-items: center;
+	justify-content: center;
+	color: var(--text-muted);
+}
+
+.fjg-note-toolbar-modal__folder-toggle-label {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 3px;
+}
+
+.fjg-note-toolbar-modal__folder-toggle-title {
+	overflow: hidden;
+	font-weight: 700;
+	line-height: 1.2;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.fjg-note-toolbar-modal__folder-toggle-meta {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	line-height: 1.2;
+}
+
+.fjg-note-toolbar-modal__folder-group-content {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	padding-left: 14px;
+}
+
 .fjg-note-toolbar-modal__row {
 	display: grid;
 	grid-template-columns: 24px minmax(0, 1fr);
@@ -257,6 +328,15 @@
 		gap: 6px;
 	}
 
+	.fjg-note-toolbar-modal__section--root-folders {
+		flex: 1 1 auto;
+		min-height: 0;
+	}
+
+	.fjg-note-toolbar-modal__section--root-folders > .fjg-note-toolbar-modal__folder-groups {
+		max-height: 65vh;
+	}
+
 	.fjg-note-toolbar-modal__section--folders,
 	.fjg-note-toolbar-modal__section--current-recent {
 		flex: 0 0 auto;
@@ -281,6 +361,20 @@
 
 	.fjg-note-toolbar-modal__list {
 		gap: 5px;
+	}
+
+	.fjg-note-toolbar-modal__folder-groups {
+		gap: 5px;
+	}
+
+	.fjg-note-toolbar-modal__folder-toggle {
+		min-height: 54px;
+		grid-template-columns: 20px minmax(0, 1fr);
+		padding: 8px 10px;
+	}
+
+	.fjg-note-toolbar-modal__folder-group-content {
+		padding-left: 8px;
 	}
 
 	.fjg-note-toolbar-modal__row {
