@@ -829,7 +829,7 @@ class FolderNavigatorModal extends Modal {
 			this.query = search.value;
 			this.render();
 		});
-		window.setTimeout(() => search.focus(), 0);
+		focusSearchAtEnd(search);
 
 		if (this.folder.parent) {
 			const parentButton = controls.createEl("button", {
@@ -1070,7 +1070,7 @@ class RecentNotesModal extends Modal {
 			this.query = search.value;
 			this.render();
 		});
-		window.setTimeout(() => search.focus(), 0);
+		focusSearchAtEnd(search);
 
 		const activeFolderPath = this.plugin.getActiveFolder()?.path ?? "";
 		const query = this.query.trim().toLowerCase();
@@ -1149,7 +1149,7 @@ class BookmarksModal extends Modal {
 			this.query = search.value;
 			void this.render();
 		});
-		window.setTimeout(() => search.focus(), 0);
+		focusSearchAtEnd(search);
 
 		const bookmarkShortcuts = await this.plugin.readBookmarks();
 		const allShortcuts = this.plugin.sortShortcuts([
@@ -1342,6 +1342,14 @@ class FjgNoteToolbarSettingTab extends PluginSettingTab {
 
 function matchesQuery(value: string, query: string): boolean {
 	return query === "" || value.toLowerCase().includes(query);
+}
+
+function focusSearchAtEnd(search: HTMLInputElement): void {
+	window.setTimeout(() => {
+		search.focus();
+		const end = search.value.length;
+		search.setSelectionRange(end, end);
+	}, 0);
 }
 
 function normalizeSortOrder(value: unknown): SortOrder {
