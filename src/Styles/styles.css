@@ -45,9 +45,10 @@
 
 .fjg-note-toolbar-modal {
 	display: flex;
-	max-height: min(76vh, 720px);
+	max-height: min(86vh, 820px);
 	flex-direction: column;
 	gap: 12px;
+	overflow: hidden;
 }
 
 .fjg-note-toolbar-modal h2,
@@ -111,10 +112,11 @@
 
 .fjg-note-toolbar-modal__row {
 	display: grid;
-	grid-template-columns: 22px minmax(0, 1fr);
-	gap: 2px 8px;
+	grid-template-columns: 24px minmax(0, 1fr);
+	gap: 10px;
 	width: 100%;
-	padding: 8px 10px;
+	min-height: 70px;
+	padding: 10px 12px;
 	border: 1px solid var(--background-modifier-border);
 	border-radius: 6px;
 	background: var(--background-primary);
@@ -128,20 +130,38 @@
 }
 
 .fjg-note-toolbar-modal__row-icon {
-	grid-row: 1 / span 2;
 	display: inline-flex;
 	width: 18px;
 	height: 18px;
 	align-items: center;
 	justify-content: center;
 	color: var(--text-muted);
+	margin-top: 2px;
 }
 
-.fjg-note-toolbar-modal__row-title,
-.fjg-note-toolbar-modal__row-path {
+.fjg-note-toolbar-modal__row-text {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.fjg-note-toolbar-modal__row-title {
 	overflow: hidden;
+	color: var(--text-normal);
+	font-weight: 600;
+	line-height: 1.25;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+.fjg-note-toolbar-modal__row-path {
+	display: -webkit-box;
+	overflow: hidden;
+	line-height: 1.25;
+	overflow-wrap: anywhere;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
 }
 
 .fjg-note-toolbar-modal__empty {
@@ -206,7 +226,7 @@
 
 	.fjg-note-toolbar-modal {
 		gap: 10px;
-		max-height: 72vh;
+		max-height: 88vh;
 	}
 
 	.fjg-note-toolbar-modal__search {
@@ -240,14 +260,23 @@
 	.fjg-note-toolbar-modal__section--folders,
 	.fjg-note-toolbar-modal__section--current-recent {
 		flex: 0 0 auto;
-		min-height: 188px;
+		min-height: 348px;
 	}
 
 	.fjg-note-toolbar-modal__section--folders > .fjg-note-toolbar-modal__list,
 	.fjg-note-toolbar-modal__section--current-recent > .fjg-note-toolbar-modal__list {
-		flex: 0 0 auto;
-		min-height: 156px;
-		max-height: 31vh;
+		flex: 1 1 auto;
+		min-height: 306px;
+		max-height: 52vh;
+	}
+
+	.fjg-note-toolbar-modal__section--all-recent {
+		flex: 1 1 auto;
+		min-height: 0;
+	}
+
+	.fjg-note-toolbar-modal__section--all-recent > .fjg-note-toolbar-modal__list {
+		max-height: 32vh;
 	}
 
 	.fjg-note-toolbar-modal__list {
@@ -255,14 +284,13 @@
 	}
 
 	.fjg-note-toolbar-modal__row {
-		min-height: 52px;
-		grid-template-columns: 20px minmax(0, 1fr);
-		padding: 7px 10px;
-		align-items: center;
+		min-height: 76px;
+		grid-template-columns: 22px minmax(0, 1fr);
+		padding: 9px 10px;
+		align-items: start;
 	}
 
-	.fjg-note-toolbar-modal__row-title,
-	.fjg-note-toolbar-modal__row-path {
-		line-height: 1.15;
+	.fjg-note-toolbar-modal__row-text {
+		gap: 5px;
 	}
 }

@@ -849,8 +849,9 @@ class FolderNavigatorModal extends Modal {
 			});
 			const icon = button.createSpan({ cls: "fjg-note-toolbar-modal__row-icon" });
 			setIcon(icon, "folder");
-			button.createSpan({ cls: "fjg-note-toolbar-modal__row-title", text: folder.name || "Vault root" });
-			button.createSpan({ cls: "fjg-note-toolbar-modal__row-path", text: this.plugin.displayPath(folder) });
+			const text = button.createSpan({ cls: "fjg-note-toolbar-modal__row-text" });
+			text.createSpan({ cls: "fjg-note-toolbar-modal__row-title", text: folder.name || "Vault root" });
+			text.createSpan({ cls: "fjg-note-toolbar-modal__row-path", text: this.plugin.displayPath(folder) });
 			button.addEventListener("click", () => {
 				this.folder = folder;
 				this.query = "";
@@ -873,8 +874,9 @@ class FolderNavigatorModal extends Modal {
 			});
 			const icon = button.createSpan({ cls: "fjg-note-toolbar-modal__row-icon" });
 			setIcon(icon, "file-text");
-			button.createSpan({ cls: "fjg-note-toolbar-modal__row-title", text: file.basename });
-			button.createSpan({ cls: "fjg-note-toolbar-modal__row-path", text: file.path });
+			const text = button.createSpan({ cls: "fjg-note-toolbar-modal__row-text" });
+			text.createSpan({ cls: "fjg-note-toolbar-modal__row-title", text: file.basename });
+			text.createSpan({ cls: "fjg-note-toolbar-modal__row-path", text: file.path });
 			button.addEventListener("click", () => {
 				void this.plugin.openFile(file);
 				this.close();
@@ -951,8 +953,9 @@ class RecentNotesModal extends Modal {
 			});
 			const icon = button.createSpan({ cls: "fjg-note-toolbar-modal__row-icon" });
 			setIcon(icon, "file-clock");
-			button.createSpan({ cls: "fjg-note-toolbar-modal__row-title", text: file.basename });
-			button.createSpan({ cls: "fjg-note-toolbar-modal__row-path", text: file.path });
+			const text = button.createSpan({ cls: "fjg-note-toolbar-modal__row-text" });
+			text.createSpan({ cls: "fjg-note-toolbar-modal__row-title", text: file.basename });
+			text.createSpan({ cls: "fjg-note-toolbar-modal__row-path", text: file.path });
 			button.addEventListener("click", () => {
 				void this.plugin.openFile(file);
 				this.close();
@@ -1021,8 +1024,9 @@ class BookmarksModal extends Modal {
 			});
 			const icon = button.createSpan({ cls: "fjg-note-toolbar-modal__row-icon" });
 			setIcon(icon, isFolder ? "folder" : "bookmark");
-			button.createSpan({ cls: "fjg-note-toolbar-modal__row-title", text: shortcut.label });
-			button.createSpan({ cls: "fjg-note-toolbar-modal__row-path", text: shortcut.path });
+			const text = button.createSpan({ cls: "fjg-note-toolbar-modal__row-text" });
+			text.createSpan({ cls: "fjg-note-toolbar-modal__row-title", text: shortcut.label });
+			text.createSpan({ cls: "fjg-note-toolbar-modal__row-path", text: shortcut.path });
 			button.addEventListener("click", () => {
 				if (isFolder) {
 					this.plugin.openFolderShortcut(shortcut);
