@@ -147,9 +147,9 @@ const DEFAULT_SETTINGS: FjgNoteToolbarSettings = {
 };
 
 const BUTTONS: Array<{ id: ToolbarButtonId; label: string; icon: string; desktopOnly?: boolean }> = [
+	{ id: "recentNotes", label: "Recent Notes", icon: "history" },
 	{ id: "folderNavigator", label: "Folder Navigator", icon: "folder-search" },
 	{ id: "copyLocation", label: "Copy Location", icon: "copy" },
-	{ id: "recentNotes", label: "Recent Notes", icon: "history" },
 	{ id: "bookmarks", label: "Bookmarks", icon: "bookmark" },
 	{ id: "openFolder", label: "Open Folder", icon: "folder-open", desktopOnly: true },
 	{ id: "projectFolders", label: "AI / Project Folders", icon: "folder-tree" },
@@ -802,6 +802,7 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 class FolderNavigatorModal extends Modal {
 	private query = "";
 	private readonly expandedRootFolderPaths = new Set<string>();
+	private readonly collapsedRootFolderPaths = new Set<string>();
 
 	constructor(
 		app: App,
@@ -911,7 +912,8 @@ class FolderNavigatorModal extends Modal {
 			if (query && !folderMatchesQuery && notes.length === 0 && childFolders.length === 0) return;
 
 			renderedCount += 1;
-			const isExpanded = query.length > 0 || this.expandedRootFolderPaths.has(folder.path);
+			const isExpanded = this.expandedRootFolderPaths.has(folder.path) ||
+				(query.length > 0 && !this.collapsedRootFolderPaths.has(folder.path));
 			const group = list.createDiv({
 				cls: `fjg-note-toolbar-modal__folder-group ${isExpanded ? "is-expanded" : ""}`,
 			});
@@ -930,10 +932,12 @@ class FolderNavigatorModal extends Modal {
 				text: `${notes.length} notes${childFolders.length > 0 ? `, ${childFolders.length} folders` : ""}`,
 			});
 			toggle.addEventListener("click", () => {
-				if (this.expandedRootFolderPaths.has(folder.path)) {
+				if (isExpanded) {
 					this.expandedRootFolderPaths.delete(folder.path);
+					this.collapsedRootFolderPaths.add(folder.path);
 				} else {
 					this.expandedRootFolderPaths.add(folder.path);
+					this.collapsedRootFolderPaths.delete(folder.path);
 				}
 				this.render();
 			});
@@ -971,6 +975,7 @@ class FolderNavigatorModal extends Modal {
 				this.folder = folder;
 				this.query = "";
 				this.expandedRootFolderPaths.clear();
+				this.collapsedRootFolderPaths.clear();
 				this.render();
 			});
 		});
@@ -1007,22 +1012,7 @@ class FolderNavigatorModal extends Modal {
 			return;
 		}
 		const list = section.createDiv({ cls: "fjg-note-toolbar-modal__list" });
-		folders.forEach((folder) => {
-			const button = list.createEl("button", {
-				cls: "fjg-note-toolbar-modal__row",
-				attr: { type: "button" },
-			});
-			const icon = button.createSpan({ cls: "fjg-note-toolbar-modal__row-icon" });
-			setIcon(icon, "folder");
-			const text = button.createSpan({ cls: "fjg-note-toolbar-modal__row-text" });
-			text.createSpan({ cls: "fjg-note-toolbar-modal__row-title", text: folder.name || "Vault root" });
-			text.createSpan({ cls: "fjg-note-toolbar-modal__row-path", text: this.plugin.displayPath(folder) });
-			button.addEventListener("click", () => {
-				this.folder = folder;
-				this.query = "";
-				this.render();
-			});
-		});
+		this.renderInlineFolderRows(list, folders);
 	}
 
 	private renderNoteSection(contentEl: HTMLElement, title: string, notes: TFile[]): void {
