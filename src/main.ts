@@ -1056,6 +1056,7 @@ class RecentNotesModal extends Modal {
 		const { contentEl } = this;
 		contentEl.empty();
 		contentEl.addClass("fjg-note-toolbar-modal");
+		contentEl.addClass("fjg-note-toolbar-modal--recent-notes");
 
 		contentEl.createEl("h2", { text: "Recent notes" });
 		const search = contentEl.createEl("input", {

@@ -241,6 +241,30 @@
 	font-size: var(--font-ui-small);
 }
 
+.fjg-note-toolbar-modal--recent-notes {
+	max-height: min(90vh, 860px);
+}
+
+.fjg-note-toolbar-modal--recent-notes .fjg-note-toolbar-modal__section--current-recent {
+	flex: 0 0 auto;
+	min-height: 190px;
+}
+
+.fjg-note-toolbar-modal--recent-notes .fjg-note-toolbar-modal__section--current-recent > .fjg-note-toolbar-modal__list {
+	flex: 0 0 auto;
+	min-height: 144px;
+	max-height: 34vh;
+}
+
+.fjg-note-toolbar-modal--recent-notes .fjg-note-toolbar-modal__section--all-recent {
+	flex: 1 1 auto;
+	min-height: 0;
+}
+
+.fjg-note-toolbar-modal--recent-notes .fjg-note-toolbar-modal__section--all-recent > .fjg-note-toolbar-modal__list {
+	max-height: 42vh;
+}
+
 .fjg-note-toolbar-settings textarea {
 	width: 100%;
 	min-height: 120px;
