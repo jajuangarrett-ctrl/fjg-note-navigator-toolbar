@@ -267,13 +267,13 @@
 
 .fjg-note-toolbar-modal__section--folders-populated {
 	flex: 0 0 auto;
-	height: clamp(240px, 34vh, 320px);
 	min-height: 0;
 }
 
 .fjg-note-toolbar-modal__section--folders-populated > .fjg-note-toolbar-modal__list {
-	flex: 1 1 auto;
+	flex: 0 1 auto;
 	min-height: 0;
+	max-height: min(34vh, 320px);
 }
 
 .fjg-note-toolbar-settings textarea {
@@ -374,13 +374,13 @@
 
 	.fjg-note-toolbar-modal__section--folders-populated {
 		flex: 0 0 auto;
-		height: clamp(260px, 38vh, 340px);
 		min-height: 0;
 	}
 
 	.fjg-note-toolbar-modal__section--folders-populated > .fjg-note-toolbar-modal__list {
-		flex: 1 1 auto;
+		flex: 0 1 auto;
 		min-height: 0;
+		max-height: min(38vh, 340px);
 	}
 
 	.fjg-note-toolbar-modal__section--current-recent {
