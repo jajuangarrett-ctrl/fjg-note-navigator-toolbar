@@ -168,8 +168,12 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 		await this.loadSettings();
 
 		this.addSettingTab(new FjgNoteToolbarSettingTab(this.app, this));
+		this.addRibbonIcon("history", "Open recent notes", () => new RecentNotesModal(this.app, this).open());
 		this.addRibbonIcon("folder-search", "Open folder navigator", () => this.openFolderNavigator());
+		this.addRibbonIcon("copy", "Open copy location menu", (event) => this.showCopyMenu(event));
+		this.addRibbonIcon("bookmark", "Open bookmarks", () => new BookmarksModal(this.app, this).open());
 		this.addRibbonIcon("folder-open", "Open folder menu", (event) => this.showOpenFolderMenu(event));
+		this.addRibbonIcon("folder-tree", "Open AI / project folders menu", (event) => this.showProjectFoldersMenu(event));
 
 		this.addCommand({
 			id: "open-folder-navigator",
