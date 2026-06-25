@@ -116,12 +116,17 @@ const OLD_DEFAULT_PROJECT_FOLDER_SHORTCUTS: Shortcut[] = [
 	{ label: "Codex Projects", path: "~/Codex" },
 ];
 
-const DEFAULT_PROJECT_FOLDER_SHORTCUTS: Shortcut[] = [
+const PREVIOUS_DEFAULT_PROJECT_FOLDER_SHORTCUTS: Shortcut[] = [
 	{ label: "AI Team", path: "AI Team" },
 	{ label: "Formatted_Notes", path: "AI Team/Formatted_Notes" },
 	{ label: "Mira Emails", path: "AI Team/Mira Emails" },
 	{ label: "owner_inbox", path: "AI Team/owner_inbox" },
 	{ label: "Team_Inbox", path: "AI Team/Team_Inbox" },
+];
+
+const DEFAULT_PROJECT_FOLDER_SHORTCUTS: Shortcut[] = [
+	...PREVIOUS_DEFAULT_PROJECT_FOLDER_SHORTCUTS,
+	{ label: "Email Drafts", path: "AI Team/Team_Inbox/Email Drafts" },
 ];
 
 const DEFAULT_SETTINGS: FjgNoteToolbarSettings = {
@@ -164,6 +169,7 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 
 		this.addSettingTab(new FjgNoteToolbarSettingTab(this.app, this));
 		this.addRibbonIcon("folder-search", "Open folder navigator", () => this.openFolderNavigator());
+		this.addRibbonIcon("folder-open", "Open folder menu", (event) => this.showOpenFolderMenu(event));
 
 		this.addCommand({
 			id: "open-folder-navigator",
@@ -210,7 +216,9 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 	async loadSettings(): Promise<void> {
 		const loaded = (await this.loadData()) as Partial<FjgNoteToolbarSettings> | null;
 		const loadedProjectShortcuts = loaded?.projectFolderShortcuts;
-		const shouldMigrateProjectShortcuts = shortcutsMatch(loadedProjectShortcuts, OLD_DEFAULT_PROJECT_FOLDER_SHORTCUTS);
+		const shouldMigrateProjectShortcuts =
+			shortcutsMatch(loadedProjectShortcuts, OLD_DEFAULT_PROJECT_FOLDER_SHORTCUTS) ||
+			shortcutsMatch(loadedProjectShortcuts, PREVIOUS_DEFAULT_PROJECT_FOLDER_SHORTCUTS);
 		const projectFolderShortcuts = shouldMigrateProjectShortcuts
 			? DEFAULT_PROJECT_FOLDER_SHORTCUTS
 			: loadedProjectShortcuts ?? DEFAULT_PROJECT_FOLDER_SHORTCUTS;
