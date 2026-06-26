@@ -28,7 +28,7 @@ Plugin id: `fjg-note-navigator-toolbar`
 
 Plugin name: `FJG Note Navigator Toolbar`
 
-Version: `0.1.23`
+Version: `0.1.24`
 
 Build command:
 
@@ -52,6 +52,12 @@ cp manifest.json main.js styles.css "/Users/franklingarrett/FJG Vault/.obsidian/
 - Open Folder: open current folder, vault root, configured folders, or project folders in Finder/File Explorer on desktop.
 - AI / Project Folders: open configured vault folders from a quick popup.
 - Settings: choose visible buttons and configure folder, note, and project shortcuts.
+
+## v0.1.24 Layout Update
+
+- Folder and current-folder recent lists are capped around three visible rows.
+- Notes, all-recent, and bookmark-style lists are capped around five visible rows.
+- Mobile rows are slightly tighter so the Notes section sits higher and gets more space.
 
 ## Important Distinction
 
