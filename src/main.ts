@@ -813,6 +813,7 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 
 class FolderNavigatorModal extends Modal {
 	private query = "";
+	private readonly folderHistory: TFolder[] = [];
 	private readonly expandedRootFolderPaths = new Set<string>();
 	private readonly collapsedRootFolderPaths = new Set<string>();
 
@@ -835,6 +836,7 @@ class FolderNavigatorModal extends Modal {
 		contentEl.addClass("fjg-note-toolbar-modal");
 
 		const header = contentEl.createDiv({ cls: "fjg-note-toolbar-modal__header" });
+		this.renderBackButton(header);
 		header.createEl("h2", { text: "Folder navigator" });
 		header.createEl("p", { text: this.plugin.displayPath(this.folder) });
 
@@ -861,9 +863,7 @@ class FolderNavigatorModal extends Modal {
 			});
 			parentButton.addEventListener("click", () => {
 				if (!this.folder.parent) return;
-				this.folder = this.folder.parent;
-				this.query = "";
-				this.render();
+				this.navigateToFolder(this.folder.parent);
 			});
 		}
 
@@ -894,6 +894,42 @@ class FolderNavigatorModal extends Modal {
 
 	private isRootFolder(): boolean {
 		return this.folder.path === "/" || this.folder.path === "";
+	}
+
+	private renderBackButton(header: HTMLElement): void {
+		if (!this.canNavigateBack()) return;
+
+		const button = header.createEl("button", {
+			cls: "fjg-note-toolbar-modal__back",
+			attr: { type: "button" },
+		});
+		setIcon(button.createSpan({ cls: "fjg-note-toolbar-modal__back-icon" }), "arrow-left");
+		button.createSpan({ cls: "fjg-note-toolbar-modal__back-label", text: "Back" });
+		button.addEventListener("click", () => this.navigateBack());
+	}
+
+	private canNavigateBack(): boolean {
+		return this.folderHistory.length > 0 || Boolean(this.folder.parent);
+	}
+
+	private navigateBack(): void {
+		const previousFolder = this.folderHistory.pop();
+		if (previousFolder) {
+			this.navigateToFolder(previousFolder, false);
+			return;
+		}
+		if (this.folder.parent) this.navigateToFolder(this.folder.parent, false);
+	}
+
+	private navigateToFolder(folder: TFolder, rememberCurrentFolder = true): void {
+		if (rememberCurrentFolder && folder.path !== this.folder.path) {
+			this.folderHistory.push(this.folder);
+		}
+		this.folder = folder;
+		this.query = "";
+		this.expandedRootFolderPaths.clear();
+		this.collapsedRootFolderPaths.clear();
+		this.render();
 	}
 
 	private renderRootFolderSections(contentEl: HTMLElement, query: string): boolean {
@@ -984,11 +1020,7 @@ class FolderNavigatorModal extends Modal {
 			text.createSpan({ cls: "fjg-note-toolbar-modal__row-title", text: folder.name || "Vault root" });
 			text.createSpan({ cls: "fjg-note-toolbar-modal__row-path", text: this.plugin.displayPath(folder) });
 			button.addEventListener("click", () => {
-				this.folder = folder;
-				this.query = "";
-				this.expandedRootFolderPaths.clear();
-				this.collapsedRootFolderPaths.clear();
-				this.render();
+				this.navigateToFolder(folder);
 			});
 		});
 	}

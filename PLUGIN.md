@@ -28,7 +28,7 @@ Plugin id: `fjg-note-navigator-toolbar`
 
 Plugin name: `FJG Note Navigator Toolbar`
 
-Version: `0.1.25`
+Version: `0.1.26`
 
 Build command:
 
@@ -62,6 +62,11 @@ cp manifest.json main.js styles.css "/Users/franklingarrett/FJG Vault/.obsidian/
 ## v0.1.25 Layout Update
 
 - Subfolder/current-folder caps are tightened further so the fourth folder row does not show on mobile.
+
+## v0.1.26 Navigation Update
+
+- Folder Navigator adds a top-left Back button above the title.
+- Back returns to the previous drilled folder when available, otherwise it goes to the parent folder.
 
 ## Important Distinction
 
