@@ -28,7 +28,7 @@ Plugin id: `fjg-note-navigator-toolbar`
 
 Plugin name: `FJG Note Navigator Toolbar`
 
-Version: `0.1.24`
+Version: `0.1.25`
 
 Build command:
 
@@ -58,6 +58,10 @@ cp manifest.json main.js styles.css "/Users/franklingarrett/FJG Vault/.obsidian/
 - Folder and current-folder recent lists are capped around three visible rows.
 - Notes, all-recent, and bookmark-style lists are capped around five visible rows.
 - Mobile rows are slightly tighter so the Notes section sits higher and gets more space.
+
+## v0.1.25 Layout Update
+
+- Subfolder/current-folder caps are tightened further so the fourth folder row does not show on mobile.
 
 ## Important Distinction
 

@@ -44,7 +44,7 @@
 }
 
 .fjg-note-toolbar-modal {
-	--fjg-note-toolbar-folder-list-max: 222px;
+	--fjg-note-toolbar-folder-list-max: 164px;
 	--fjg-note-toolbar-note-list-max: 374px;
 
 	display: flex;
@@ -353,7 +353,7 @@
 	}
 
 	.fjg-note-toolbar-modal {
-		--fjg-note-toolbar-folder-list-max: 214px;
+		--fjg-note-toolbar-folder-list-max: 158px;
 		--fjg-note-toolbar-note-list-max: 360px;
 
 		gap: 10px;
