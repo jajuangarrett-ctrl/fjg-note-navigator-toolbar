@@ -28,7 +28,7 @@ Plugin id: `fjg-note-navigator-toolbar`
 
 Plugin name: `FJG Note Navigator Toolbar`
 
-Version: `0.1.26`
+Version: `0.1.27`
 
 Build command:
 
@@ -67,6 +67,11 @@ cp manifest.json main.js styles.css "/Users/franklingarrett/FJG Vault/.obsidian/
 
 - Folder Navigator adds a top-left Back button above the title.
 - Back returns to the previous drilled folder when available, otherwise it goes to the parent folder.
+
+## v0.1.27 Search Update
+
+- Folder Navigator search now finds matching folders deeper in the current folder tree.
+- Matching folder results remain tappable drill-down rows.
 
 ## Important Distinction
 

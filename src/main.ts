@@ -573,6 +573,23 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 		};
 	}
 
+	searchFolders(folder: TFolder, query: string): TFolder[] {
+		const normalizedQuery = query.trim().toLowerCase();
+		if (normalizedQuery === "") return [];
+
+		const folders: TFolder[] = [];
+		const visit = (current: TFolder): void => {
+			current.children.forEach((child) => {
+				if (!(child instanceof TFolder) || this.isIgnoredNavigatorFolder(child)) return;
+				if (matchesQuery(`${child.name} ${child.path}`, normalizedQuery)) folders.push(child);
+				visit(child);
+			});
+		};
+
+		visit(folder);
+		return this.sortFolders(dedupeFolders(folders));
+	}
+
 	collectRecentFolderNotes(folder: TFolder): TFile[] {
 		const notes: TFile[] = [];
 
@@ -869,7 +886,9 @@ class FolderNavigatorModal extends Modal {
 
 		const entries = this.plugin.collectFolderEntries(this.folder);
 		const query = this.query.trim().toLowerCase();
-		const folders = entries.folders.filter((folder) => matchesQuery(folder.path, query));
+		const folders = query
+			? this.plugin.searchFolders(this.folder, query)
+			: entries.folders;
 		const notes = entries.notes.filter((file) => matchesQuery(file.path, query));
 		const notePaths = new Set(notes.map((file) => file.path));
 		const linkedNotes = this.plugin
@@ -955,7 +974,9 @@ class FolderNavigatorModal extends Modal {
 			const notes = this.plugin
 				.collectRecentFolderNotes(folder)
 				.filter((file) => matchesQuery(`${file.basename} ${file.path}`, query));
-			const childFolders = immediateFolders.filter((child) => matchesQuery(child.path, query));
+			const childFolders = query
+				? this.plugin.searchFolders(folder, query)
+				: immediateFolders;
 			const folderMatchesQuery = matchesQuery(folder.path, query);
 			if (query && !folderMatchesQuery && notes.length === 0 && childFolders.length === 0) return;
 
@@ -1422,6 +1443,15 @@ function dedupeFiles(files: TFile[]): TFile[] {
 	return files.filter((file) => {
 		if (seen.has(file.path)) return false;
 		seen.add(file.path);
+		return true;
+	});
+}
+
+function dedupeFolders(folders: TFolder[]): TFolder[] {
+	const seen = new Set<string>();
+	return folders.filter((folder) => {
+		if (seen.has(folder.path)) return false;
+		seen.add(folder.path);
 		return true;
 	});
 }
