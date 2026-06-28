@@ -28,7 +28,7 @@ Plugin id: `fjg-note-navigator-toolbar`
 
 Plugin name: `FJG Note Navigator Toolbar`
 
-Version: `0.1.27`
+Version: `0.1.28`
 
 Build command:
 
@@ -47,6 +47,7 @@ cp manifest.json main.js styles.css "/Users/franklingarrett/FJG Vault/.obsidian/
 
 - Folder Navigator: browse the vault root by default, plus subfolders, parent folder, and linked notes from the active note.
 - Copy Location: copy vault path, folder path, full system path, Obsidian URI, wiki link, or Markdown link.
+- Reveal File: run Obsidian's built-in Reveal active file in navigation action.
 - Recent Notes: show recent Markdown files with current-folder items prioritized.
 - Bookmarks: show saved Obsidian bookmarks plus configured shortcuts.
 - Open Folder: open current folder, vault root, configured folders, or project folders in Finder/File Explorer on desktop.
@@ -72,6 +73,11 @@ cp manifest.json main.js styles.css "/Users/franklingarrett/FJG Vault/.obsidian/
 
 - Folder Navigator search now finds matching folders deeper in the current folder tree.
 - Matching folder results remain tappable drill-down rows.
+
+## v0.1.28 Navigation Update
+
+- Adds a Reveal File toolbar button and left ribbon icon.
+- The button runs Obsidian's built-in `file-explorer:reveal-active-file` command.
 
 ## Important Distinction
 

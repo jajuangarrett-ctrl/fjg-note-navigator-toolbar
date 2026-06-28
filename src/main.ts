@@ -18,6 +18,7 @@ import {
 type ToolbarButtonId =
 	| "folderNavigator"
 	| "copyLocation"
+	| "revealFile"
 	| "recentNotes"
 	| "bookmarks"
 	| "openFolder"
@@ -47,6 +48,7 @@ interface RecentNote {
 interface ButtonVisibility {
 	folderNavigator: boolean;
 	copyLocation: boolean;
+	revealFile: boolean;
 	recentNotes: boolean;
 	bookmarks: boolean;
 	openFolder: boolean;
@@ -80,6 +82,15 @@ interface ElectronModule {
 	shell?: ElectronShell;
 }
 
+interface ObsidianCommandRegistry {
+	commands: Record<string, unknown>;
+	executeCommandById(id: string): unknown;
+}
+
+interface AppWithCommands extends App {
+	commands: ObsidianCommandRegistry;
+}
+
 interface OsModule {
 	homedir?: () => string;
 }
@@ -91,6 +102,7 @@ declare global {
 }
 
 const PLUGIN_CLASS = "fjg-note-toolbar";
+const REVEAL_FILE_COMMAND_ID = "file-explorer:reveal-active-file";
 
 const ROOT_NAVIGATOR_FOLDERS = [
 	"00 Inbox",
@@ -134,6 +146,7 @@ const DEFAULT_SETTINGS: FjgNoteToolbarSettings = {
 	buttons: {
 		folderNavigator: true,
 		copyLocation: true,
+		revealFile: true,
 		recentNotes: true,
 		bookmarks: true,
 		openFolder: true,
@@ -155,6 +168,7 @@ const BUTTONS: Array<{ id: ToolbarButtonId; label: string; icon: string; desktop
 	{ id: "recentNotes", label: "Recent Notes", icon: "history" },
 	{ id: "folderNavigator", label: "Folder Navigator", icon: "folder-search" },
 	{ id: "copyLocation", label: "Copy Location", icon: "copy" },
+	{ id: "revealFile", label: "Reveal File", icon: "file-search" },
 	{ id: "bookmarks", label: "Bookmarks", icon: "bookmark" },
 	{ id: "openFolder", label: "Open Folder", icon: "folder-open", desktopOnly: true },
 	{ id: "projectFolders", label: "AI / Project Folders", icon: "folder-tree" },
@@ -171,6 +185,7 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 		this.addRibbonIcon("history", "Open recent notes", () => new RecentNotesModal(this.app, this).open());
 		this.addRibbonIcon("folder-search", "Open folder navigator", () => this.openFolderNavigator());
 		this.addRibbonIcon("copy", "Open copy location menu", (event) => this.showCopyMenu(event));
+		this.addRibbonIcon("file-search", "Reveal file in navigation", () => this.revealActiveFileInNavigation());
 		this.addRibbonIcon("bookmark", "Open bookmarks", () => new BookmarksModal(this.app, this).open());
 		this.addRibbonIcon("folder-open", "Open folder menu", (event) => this.showOpenFolderMenu(event));
 		this.addRibbonIcon("folder-tree", "Open AI / project folders menu", (event) => this.showProjectFoldersMenu(event));
@@ -194,6 +209,11 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 			id: "copy-current-note-path",
 			name: "Copy current note vault path",
 			callback: () => void this.copyCurrentLocation("vault-note"),
+		});
+		this.addCommand({
+			id: "reveal-active-file-in-navigation",
+			name: "Reveal active file in navigation",
+			callback: () => this.revealActiveFileInNavigation(),
 		});
 
 		this.registerEvent(
@@ -301,6 +321,20 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 		this.addCopyMenuItem(menu, "Copy Markdown wiki link", "wiki-link");
 		this.addCopyMenuItem(menu, "Copy Markdown file link", "markdown-file-link");
 		menu.showAtMouseEvent(event);
+	}
+
+	revealActiveFileInNavigation(): void {
+		const file = this.getActiveMarkdownFile();
+		if (!file) {
+			new Notice("Open a note first.");
+			return;
+		}
+		const commandApp = this.app as AppWithCommands;
+		if (!(REVEAL_FILE_COMMAND_ID in commandApp.commands.commands)) {
+			new Notice("Reveal file in navigation is not available.");
+			return;
+		}
+		void commandApp.commands.executeCommandById(REVEAL_FILE_COMMAND_ID);
 	}
 
 	showOpenFolderMenu(event: MouseEvent): void {
@@ -811,6 +845,9 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 				break;
 			case "copyLocation":
 				this.showCopyMenu(event);
+				break;
+			case "revealFile":
+				this.revealActiveFileInNavigation();
 				break;
 			case "recentNotes":
 				new RecentNotesModal(this.app, this).open();
