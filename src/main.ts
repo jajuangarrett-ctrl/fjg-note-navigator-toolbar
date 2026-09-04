@@ -17,6 +17,7 @@ import {
 
 type ToolbarButtonId =
 	| "folderNavigator"
+	| "copyPageText"
 	| "copyLocation"
 	| "revealFile"
 	| "recentNotes"
@@ -47,6 +48,7 @@ interface RecentNote {
 
 interface ButtonVisibility {
 	folderNavigator: boolean;
+	copyPageText: boolean;
 	copyLocation: boolean;
 	revealFile: boolean;
 	recentNotes: boolean;
@@ -103,6 +105,7 @@ declare global {
 
 const PLUGIN_CLASS = "fjg-note-toolbar";
 const REVEAL_FILE_COMMAND_ID = "file-explorer:reveal-active-file";
+const COPY_PAGE_TEXT_COMMAND_ID = "fjg-file-focus:copy-current-note-to-clipboard";
 
 const ROOT_NAVIGATOR_FOLDERS = [
 	"00 Inbox",
@@ -145,6 +148,7 @@ const DEFAULT_SETTINGS: FjgNoteToolbarSettings = {
 	enabled: true,
 	buttons: {
 		folderNavigator: true,
+		copyPageText: true,
 		copyLocation: true,
 		revealFile: true,
 		recentNotes: true,
@@ -167,6 +171,7 @@ const DEFAULT_SETTINGS: FjgNoteToolbarSettings = {
 const BUTTONS: Array<{ id: ToolbarButtonId; label: string; icon: string; desktopOnly?: boolean }> = [
 	{ id: "recentNotes", label: "Recent Notes", icon: "history" },
 	{ id: "folderNavigator", label: "Folder Navigator", icon: "folder-search" },
+	{ id: "copyPageText", label: "Copy Page Text", icon: "clipboard-copy" },
 	{ id: "copyLocation", label: "Copy Location", icon: "copy" },
 	{ id: "revealFile", label: "Reveal File", icon: "file-search" },
 	{ id: "bookmarks", label: "Bookmarks", icon: "bookmark" },
@@ -335,6 +340,15 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 			return;
 		}
 		void commandApp.commands.executeCommandById(REVEAL_FILE_COMMAND_ID);
+	}
+
+	copyPageText(): void {
+		const commandApp = this.app as AppWithCommands;
+		if (!(COPY_PAGE_TEXT_COMMAND_ID in commandApp.commands.commands)) {
+			new Notice("Copy page text is not available. Enable FJG File Focus first.");
+			return;
+		}
+		void commandApp.commands.executeCommandById(COPY_PAGE_TEXT_COMMAND_ID);
 	}
 
 	showOpenFolderMenu(event: MouseEvent): void {
@@ -845,6 +859,9 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 				break;
 			case "copyLocation":
 				this.showCopyMenu(event);
+				break;
+			case "copyPageText":
+				this.copyPageText();
 				break;
 			case "revealFile":
 				this.revealActiveFileInNavigation();
