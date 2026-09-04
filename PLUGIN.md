@@ -28,7 +28,7 @@ Plugin id: `fjg-note-navigator-toolbar`
 
 Plugin name: `FJG Note Navigator Toolbar`
 
-Version: `0.1.28`
+Version: `0.1.29`
 
 Build command:
 
@@ -46,6 +46,7 @@ cp manifest.json main.js styles.css "/Users/franklingarrett/FJG Vault/.obsidian/
 ## Feature Scope
 
 - Folder Navigator: browse the vault root by default, plus subfolders, parent folder, and linked notes from the active note.
+- Copy Page Text: run FJG File Focus's existing action to copy the active note's Markdown body without YAML properties.
 - Copy Location: copy vault path, folder path, full system path, Obsidian URI, wiki link, or Markdown link.
 - Reveal File: run Obsidian's built-in Reveal active file in navigation action.
 - Recent Notes: show recent Markdown files with current-folder items prioritized.
@@ -78,6 +79,11 @@ cp manifest.json main.js styles.css "/Users/franklingarrett/FJG Vault/.obsidian/
 
 - Adds a Reveal File toolbar button and left ribbon icon.
 - The button runs Obsidian's built-in `file-explorer:reveal-active-file` command.
+
+## v0.1.29 Copy Update
+
+- Adds a Copy Page Text button to the note-level toolbar.
+- The button invokes FJG File Focus's existing `copy-current-note-to-clipboard` action, preserving its YAML-removal behavior.
 
 ## Important Distinction
 

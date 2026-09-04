@@ -345,7 +345,7 @@ export default class FjgNoteToolbarPlugin extends Plugin {
 	copyPageText(): void {
 		const commandApp = this.app as AppWithCommands;
 		if (!(COPY_PAGE_TEXT_COMMAND_ID in commandApp.commands.commands)) {
-			new Notice("Copy page text is not available. Enable FJG File Focus first.");
+			new Notice("Copy page text is not available because the required plugin is disabled.");
 			return;
 		}
 		void commandApp.commands.executeCommandById(COPY_PAGE_TEXT_COMMAND_ID);
